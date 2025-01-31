@@ -1,0 +1,23 @@
+.gold{
+    color: goldenrod;
+}
+.red{
+    color:darkred;
+}
+body{
+    background-color: darkolivegreen;
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+}
+button{
+    background-color: goldenrod;
+    border: none;
+    width: 150px;
+    border-radius: 4px;
+    padding: 5px;
+    color: white;
+    font-weight: bold;
+
+}

@@ -11,6 +11,12 @@ body{
     font-weight: bold;
     color: white;
 }
+.buttons{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
 button{
     background-color: goldenrod;
     border: none;
@@ -19,5 +25,9 @@ button{
     padding: 5px;
     color: white;
     font-weight: bold;
-
+    margin-bottom: 4px;
+}
+button:hover{
+    opacity: 0.8;
+    transform: scale(1.05)
 }

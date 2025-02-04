@@ -1,20 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>blackjack</title>
 </head>
+
 <body>
-    <h1><span class="gold" >BLACK</span><span class="red">JACK</span></h1>
+    <h1><span class="gold">BLACK</span><span class="red">JACK</span></h1>
     <p id="msgEl">vil du spille en runde</p>
     <p class="kort">cards: </p>
     <p id="sumEl">sum: </p>
+    <p class="kort">Dealerens kort: <span id="dealerCards"></span></p>
+    <p id="dealerSumEl">Dealerens sum: </p>
     <div class="buttons">
-       
-        <button onclick="startGame()">START</button> 
-        <button id="cardBtn">NYTT KORT</button>
+
+        <button onclick="startGame()">START</button>
+        <button id="cardBtn">HIT</button>
+        <button id="standBtn">STAND</button>
+
     </div>
 
     <script>
@@ -23,67 +29,145 @@
 
 
         let cards = []
+        let dealerCards = []
         let sum = 0
+        let dealerSum = 0
         let message = ""
         let isAlive = false
         let hasBlackjack = false
-        
+
         let cardEL = document.querySelector(".kort")
         let sumEl = document.getElementById("sumEl")
-        let newCardBtn = document.getElementById("cardBtn")
+        let dealerCardsEl = document.getElementById("dealerCards")
+        let dealerSumEl = document.getElementById("dealerSumEl")
+        let hitBtn = document.getElementById("cardBtn")
+        let standBtn = document.getElementById("standBtn")
         let msgEl = document.getElementById("msgEl")
 
         function getRandomCard() {
-    let randomCard = Math.floor(Math.random() * 13) + 1
-    if (randomCard > 10) {
-        return 10 
-    } else if (randomCard === 1) {
-        return 11 
-    } else {
-        return randomCard
-    }
-}
+            let randomCard = Math.floor(Math.random() * 13) + 1
+            if (randomCard > 10) {
+                return 10
+            } else if (randomCard === 1) {
+                return 11
+            } else {
+                return randomCard
+            }
+        }
 
-            
-        
+        function calculateSum(cards) {
+            let sum = 0
+            let aceCount = 0
 
-        function startGame(){
+            for (let card of cards) {
+                if (card === 11) {
+                    aceCount++
+                }
+                sum += card
+            }
+
+            while (sum > 21 && aceCount > 0) {
+                sum -= 10
+                aceCount--
+            }
+            return sum
+        }
+
+
+
+        function startGame() {
             isAlive = true
+            hasBlackjack = false
             let firstCard = getRandomCard()
             let secondCard = getRandomCard()
-             cards = [firstCard, secondCard]
-             sum = firstCard + secondCard
-             renderGame()
-            
+            cards = [firstCard, secondCard]
+            sum = firstCard + secondCard
+            let dealerFirstCard = getRandomCard()
+            dealerCards = [dealerFirstCard]
+            dealerSum = dealerFirstCard
+
+
+            if (sum === 21) {
+                hasBlackjack = true
+            }
+            renderGame(true)
+
         }
-        function renderGame(){
-            cardEL.textContent = "cards: ";
-            for(let i = 0; i<cards.length;i++){
+        function renderGame(isFirstRound = false) {
+            cardEL.textContent = "cards: "
+            for (let i = 0; i < cards.length; i++) {
                 cardEL.textContent += cards[i] + " "
             }
-            sumEl.textContent = "sum " + sum;
-            if(sum < 21){
-                message = "Hit eller stand?"
+
+            dealerCardsEl.textContent = ""
+            for (let i = 0; i < dealerCards.length; i++) {
+                dealerCardsEl.textContent += dealerCards[i] + " "
             }
-            else if(sum === 21){
-                message = "Blackjack"
-                hasBlackjack = true
-            } else{
+            sumEl.textContent = "sum " + sum
+            dealerSumEl.textContent = "Dealerens sum: " + dealerSum
+            if (hasBlackjack && isFirstRound) {
+                message = "blackjack!"
+                disableHit()
+            }
+            else if (sum === 21) {
+                disableHit()
+            }
+            else if (sum > 21) {
                 message = "Busted"
                 isAlive = false
+
+            }
+            else {
+                message = "Hit eller stand?"
+
             }
             msgEl.textContent = message
         }
+        function disableHit() {
+            hitBtn.disabled = true
+        }
 
-        newCardBtn.addEventListener("click", function(){
-            if(isAlive === true && hasBlackjack === false){
-            let newCard = getRandomCard()
-            cards.push(newCard)
-            sum += newCard
-            renderGame()
- }
+
+        hitBtn.addEventListener("click", function () {
+            if (isAlive === true && hasBlackjack === false) {
+                let newCard = getRandomCard()
+                cards.push(newCard)
+                sum += newCard
+                renderGame()
+            }
 
         })
+        standBtn.addEventListener("click", function () {
+            if (isAlive) {
+                dealerPlay()
+            }
+        })
+
+        function dealerPlay() {
+            while (dealerSum < 17) {
+                let newCard = getRandomCard()
+                dealerCards.push(newCard)
+                dealerSum += newCard
+            }
+            renderGame()
+            checkWinner()
+        }
+
+
+
+        function checkWinner() {
+            if (dealerSum > 21) {
+                msgEl.textContent = "Dealeren bustet! Du vinner! "
+            } else if (sum > dealerSum) {
+                msgEl.textContent = "Du vinner! "
+            } else if (sum < dealerSum) {
+                msgEl.textContent = "Dealeren vinner! "
+            } else {
+                msgEl.textContent = "Det er uavgjort! "
+            }
+            isAlive = false;
+        }
     </script>
 </body>
-</html> 
+
+</html>

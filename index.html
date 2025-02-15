@@ -81,10 +81,10 @@
             let firstCard = getRandomCard()
             let secondCard = getRandomCard()
             cards = [firstCard, secondCard]
-            sum = firstCard + secondCard
+            sum = calculateSum(cards)
             let dealerFirstCard = getRandomCard()
             dealerCards = [dealerFirstCard]
-            dealerSum = dealerFirstCard
+            dealerSum = calculateSum(dealerCards)
 
 
             if (sum === 21) {
@@ -135,7 +135,7 @@
             if (isAlive === true && hasBlackjack === false) {
                 let newCard = getRandomCard()
                 cards.push(newCard)
-                sum += newCard
+                sum = calculateSum(cards)
                 renderGame()
             }
 
@@ -151,10 +151,10 @@
                 if (dealerSum < 17) {
                     let newCard = getRandomCard()
                     dealerCards.push(newCard)
-                    dealerSum += newCard
+                    dealerSum = calculateSum(dealerCards)
                     renderGame()
 
-                    setTimeout(trekkKort, 1000)
+                    setTimeout(trekkKort, 1500)
                 } else {
                     checkWinner()
                 }

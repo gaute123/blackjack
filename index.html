@@ -14,7 +14,7 @@
     <p class="kort">cards: </p>
     <p id="sumEl">sum: </p>
     <p class="kort">Dealerens kort: <span id="dealerCards"></span></p>
-    <p id="dealerSumEl">Dealerens sum: </p>
+    <p id="dealerSumEl">Dealerens sum:</p>
     <div class="buttons">
 
         <button onclick="startGame()">START</button>
@@ -126,6 +126,9 @@
         function disableHit() {
             hitBtn.disabled = true
         }
+        function enableHit() {
+            hitBtn.disabled = false
+        }
 
 
         hitBtn.addEventListener("click", function () {
@@ -144,13 +147,19 @@
         })
 
         function dealerPlay() {
-            while (dealerSum < 17) {
-                let newCard = getRandomCard()
-                dealerCards.push(newCard)
-                dealerSum += newCard
+            function trekkKort() {
+                if (dealerSum < 17) {
+                    let newCard = getRandomCard()
+                    dealerCards.push(newCard)
+                    dealerSum += newCard
+                    renderGame()
+
+                    setTimeout(trekkKort, 1000)
+                } else {
+                    checkWinner()
+                }
             }
-            renderGame()
-            checkWinner()
+            setTimeout(trekkKort, 500)
         }
 
 

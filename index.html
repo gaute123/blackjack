@@ -17,20 +17,20 @@
     <p id="dealerSumEl">Dealerens sum:</p>
     <div class="buttons">
 
-        <button onclick="startGame()">START</button>
+        <button id="startBtn" onclick="startGame()">START</button>
         <button id="cardBtn">HIT</button>
         <button id="standBtn">STAND</button>
 
     </div>
 
     <script>
-        
+
         let kortstokk = []
         const suits = ["hearts", "diamonds", "spades", "clubs"]
         for (const suit of suits) {
             for (let i = 1; i <= 13; i++) {
                 const kortNavn = "kortstokk/" + i + "_of_" + suit + ".png"
-                
+
                 let verdi;
                 if (i === 1) {
                     verdi = 11;
@@ -40,12 +40,12 @@
                     verdi = i;
                 }
 
-                kortstokk.push({image: kortNavn, value: verdi})
+                kortstokk.push({ image: kortNavn, value: verdi })
             }
         }
 
         kortstokk = kortstokk.sort(() => Math.random() - 0.5);
-       
+
 
 
 
@@ -57,6 +57,7 @@
         let message = ""
         let isAlive = false
         let hasBlackjack = false
+        let isDealerPlaying = false
 
         let cardEL = document.querySelector(".kort")
         let sumEl = document.getElementById("sumEl")
@@ -65,10 +66,12 @@
         let hitBtn = document.getElementById("cardBtn")
         let standBtn = document.getElementById("standBtn")
         let msgEl = document.getElementById("msgEl")
+        let startBtn = document.getElementById("startBtn")
+
 
         function getRandomCard() {
-             let trukketKort = kortstokk.pop()
-             return trukketKort
+            let trukketKort = kortstokk.pop()
+            return trukketKort
         }
 
         function calculateSum(cards) {
@@ -80,7 +83,7 @@
                     aceCount++
                 }
                 sum += card.value
-            } 
+            }
             while (sum > 21 && aceCount > 0) {
                 sum -= 10
                 aceCount--
@@ -93,6 +96,7 @@
         function startGame() {
             isAlive = true
             hasBlackjack = false
+            isDealerPlaying = false
             let firstCard = getRandomCard()
             let secondCard = getRandomCard()
             cards = [firstCard, secondCard]
@@ -105,12 +109,13 @@
             if (sum === 21) {
                 hasBlackjack = true
             }
+            enableStand()
             renderGame(true)
 
         }
         function renderGame(isFirstRound = false) {
             cardEL.innerHTML = "cards: "
-            for (let card of cards){
+            for (let card of cards) {
                 let img = document.createElement("img")
                 img.src = card.image
                 img.classList.add("card-img")
@@ -118,16 +123,16 @@
             }
 
             dealerCardsEl.innerHTML = ""
-            for (let card of dealerCards){
+            for (let card of dealerCards) {
                 let img = document.createElement("img")
                 img.src = card.image
                 img.classList.add("card-img")
                 dealerCardsEl.appendChild(img)
             }
-            
+
             sumEl.textContent = "sum " + sum
             dealerSumEl.textContent = "Dealerens sum: " + dealerSum
-            
+
             if (hasBlackjack && isFirstRound) {
                 message = "blackjack!"
                 disableHit()
@@ -153,10 +158,23 @@
         function enableHit() {
             hitBtn.disabled = false
         }
+        function disableStart() {
+            startBtn.disabled = true
+        }
+        function enableStart() {
+            startBtn.disabled = false
+        }
+        function disableStand() {
+            standBtn.disabled = true
+        }
+        function enableStand() {
+            standBtn.disabled = false
+        }
+
 
 
         hitBtn.addEventListener("click", function () {
-            if (isAlive === true && hasBlackjack === false) {
+            if (isAlive === true && hasBlackjack === false && !isDealerPlaying) {
                 let newCard = getRandomCard()
                 cards.push(newCard)
                 sum = calculateSum(cards)
@@ -165,12 +183,19 @@
 
         })
         standBtn.addEventListener("click", function () {
-            if (isAlive) {
+            if (isAlive && !isDealerPlaying) {
+                disableHit()
+                disableStand()
+                disableStart()
+                isDealerPlaying = true
                 dealerPlay()
             }
         })
 
         function dealerPlay() {
+            if (!isAlive) return
+            isDealerPlaying = true
+           
             function trekkKort() {
                 if (dealerSum < 17) {
                     let newCard = getRandomCard()
@@ -181,6 +206,9 @@
                     setTimeout(trekkKort, 1500)
                 } else {
                     checkWinner()
+                   isDealerPlaying = false
+                    enableStart()
+                  
                 }
             }
             setTimeout(trekkKort, 500)
@@ -194,11 +222,13 @@
             } else if (sum > dealerSum) {
                 msgEl.textContent = "Du vinner! "
             } else if (sum < dealerSum) {
-                msgEl.textContent = "Dealeren vinner! "
+                msgEl.textContent = "Dealeren vinner!"
             } else {
                 msgEl.textContent = "Det er uavgjort! "
             }
-            isAlive = false;
+            isAlive = false
+
+
         }
     </script>
 </body>

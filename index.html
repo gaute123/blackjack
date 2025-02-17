@@ -10,18 +10,17 @@
 
 <body>
     <h1><span class="gold">BLACK</span><span class="red">JACK</span></h1>
-    <p id="msgEl">vil du spille en runde</p>
-    <p class="kort">cards: </p>
-    <p id="sumEl">sum: </p>
-    <p class="kort">Dealerens kort: <span id="dealerCards"></span></p>
-    <p id="dealerSumEl">Dealerens sum:</p>
-    <div class="buttons">
-
-        <button id="startBtn" onclick="startGame()">START</button>
-        <button id="cardBtn">HIT</button>
-        <button id="standBtn">STAND</button>
-
+    <p id="msgEl">vil du spille en runde</p> 
+    
+    <button id="startBtn" onclick="startGame()">START</button>       
+    <div class="buttons"> 
+    <button class="hidden"  id="cardBtn">HIT</button>
+    <button class="hidden"  id="standBtn">STAND</button>
     </div>
+    <p class="kort"> </p>
+    <p id="sumEl"></p>
+    <p class="kort"><span id="dealerCards"></span></p>
+    <p id="dealerSumEl"></p>
 
     <script>
 
@@ -104,17 +103,23 @@
             let dealerFirstCard = getRandomCard()
             dealerCards = [dealerFirstCard]
             dealerSum = calculateSum(dealerCards)
+            startBtn.classList.add("usynlig")
 
 
             if (sum === 21) {
                 hasBlackjack = true
             }
+            startBtn.classList.add("hidden")
+            standBtn.classList.remove("hidden")
+            hitBtn.classList.remove("hidden")
+            
+
             enableStand()
             renderGame(true)
 
         }
         function renderGame(isFirstRound = false) {
-            cardEL.innerHTML = "cards: "
+            cardEL.innerHTML = ""
             for (let card of cards) {
                 let img = document.createElement("img")
                 img.src = card.image
@@ -130,7 +135,7 @@
                 dealerCardsEl.appendChild(img)
             }
 
-            sumEl.textContent = "sum " + sum
+            sumEl.textContent = "din sum " + sum
             dealerSumEl.textContent = "Dealerens sum: " + dealerSum
 
             if (hasBlackjack && isFirstRound) {
@@ -143,6 +148,10 @@
             else if (sum > 21) {
                 message = "Busted"
                 isAlive = false
+                startBtn.classList.remove("hidden")
+                standBtn.classList.add("hidden")
+                hitBtn.classList.add("hidden")
+                startBtn.innerHTML = "NY RUNDE?"
 
             }
             else {
@@ -227,7 +236,10 @@
                 msgEl.textContent = "Det er uavgjort! "
             }
             isAlive = false
-
+            startBtn.classList.remove("hidden")
+            standBtn.classList.add("hidden")
+            hitBtn.classList.add("hidden")
+            startBtn.innerHTML = "NY RUNDE?"
 
         }
     </script>
